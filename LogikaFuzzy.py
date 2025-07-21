@@ -181,8 +181,8 @@ with col2:
     glucose = st.slider("Glucose", 50, 100, 75)
     cigarette = st.slider("Cigarette", 5, 40, 15)
 
-# === 2. Fuzzifikasi ===
-st.header("2\u20e3 Fuzzifikasi (Tingkat Keanggotaan)")
+# === 2. Fuzzyfikasi ===
+st.header("2\u20e3 Fuzzyfikasi (Tingkat Keanggotaan)")
 
 age_fz = fuzzify_age(age)
 glucose_fz = fuzzify_glucose(glucose)
