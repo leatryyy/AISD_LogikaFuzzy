@@ -1,40 +1,35 @@
 import streamlit as st
 
-# ====== Fungsi Keanggotaan Linear dan Invers Linear ======
-def linear(x, a, b):
-    return 0 if x <= a else 1 if x >= b else (x - a) / (b - a)
-
-def inv_linear(x, a, b):
-    return 1 if x <= a else 0 if x >= b else (b - x) / (b - a)
 
 # ====== Fuzzifikasi per variabel ======
 #AGE
-def fuzzy_age_young(age):
-    if age <= 25:
+def age_young(a):
+    if a <= 25:
         return 1
-    elif age <= 35:
-        return (35 - age) / (35 - 25)
+    elif 25 < a < 45:
+        return (45 - a) / (45 - 25)
     else:
         return 0
 
-def fuzzy_age_adult(age):
-    if 25 < age <= 35:
-        return (age - 25) / (35 - 25)
-    elif 35 < age <= 45:
-        return (45 - age) / (45 - 35)
+def age_adult(a):
+    if 35 <= a < 45:
+        return (a - 35) / (45 - 35)
+    elif 45 <= a <= 55:
+        return (55 - a) / (55 - 45)
     else:
         return 0
 
-def fuzzy_age_old(age):
-    if 35 < age <= 45:
-        return (age - 35) / (45 - 35)
-    elif 45 < age <= 65:
-        return (65 - age) / (65 - 45)
-    else:
+def age_old(a):
+    if a <= 45:
         return 0
+    elif 45 < a < 65:
+        return (a - 45) / (65 - 45)
+    else:
+        return 1
+
 
 #GLUCOSE
-def fuzzy_glucose_low(g):
+def glucose_low(g):
     if g <= 50:
         return 1
     elif g <= 90:
@@ -42,7 +37,7 @@ def fuzzy_glucose_low(g):
     else:
         return 0
 
-def fuzzy_glucose_high(g):
+def glucose_high(g):
     if g <= 60:
         return 0
     elif g <= 100:
@@ -51,71 +46,71 @@ def fuzzy_glucose_high(g):
         return 1
 
 #BMI
-def fuzzy_bmi_low(b):
-    if b <= 20:
+def bmi_low(b):
+    if b <= 10:
         return 1
     elif b <= 30:
-        return (30 - b) / (30 - 20)
+        return (30 - b) / (30 - 10)
     else:
         return 0
 
-def fuzzy_bmi_mid(b):
-    if 20 < b <= 30:
+def bmi_mid(b):
+    if 20 <= b < 30:
         return (b - 20) / (30 - 20)
     elif 30 < b <= 40:
         return (40 - b) / (40 - 30)
     else:
         return 0
 
-def fuzzy_bmi_high(b):
+def bmi_high(b):
     if b <= 30:
         return 0
-    elif b <= 40:
-        return (b - 30) / (40 - 30)
+    elif 40 < b < 50:
+        return (b - 40) / (50 - 40)
     else:
         return 1
 
 #CIGARETTE
-def fuzzy_cigarette_low(c):
-    if c <= 15:
+def cigarette_low(c):
+    if c <= 5:
         return 1
     elif c <= 30:
-        return (30 - c) / (30 - 15)
+        return (30 - c) / (30 - 5)
     else:
         return 0
 
-def fuzzy_cigarette_high(c):
+def cigarette_high(c):
     if c <= 15:
         return 0
-    elif c <= 30:
-        return (c - 15) / (30 - 15)
+    elif c <= 45:
+        return (c - 15) / (45 - 15)
     else:
         return 1
 
 def fuzzify_age(age):
     return {
-        "Young": fuzzy_age_young(age),
-        "Adult": fuzzy_age_adult(age),
-        "Old": fuzzy_age_old(age)
+        "Young": age_young(age),
+        "Adult": age_adult(age),
+        "Old": age_old(age)
     }
 
-def fuzzify_glucose(glucose):
+def fuzzify_glucose(glu):
     return {
-        "Low": fuzzy_glucose_low(glucose),
-        "High": fuzzy_glucose_high(glucose)
+        "Low": glucose_low(glu),
+        "High": glucose_high(glu)
     }
 
 def fuzzify_bmi(bmi):
     return {
-        "Low": fuzzy_bmi_low(bmi),
-        "Mid": fuzzy_bmi_mid(bmi),
-        "High": fuzzy_bmi_high(bmi)
+        "Low": bmi_low(bmi),
+        "Mid": bmi_mid(bmi),
+        "High": bmi_high(bmi)
     }
 
 def fuzzify_cigarette(cigarette):
     return {
-        "Low": fuzzy_cigarette_low(cigarette),
-        "High": fuzzy_cigarette_high(cigarette)
+        "Low": cigarette_low(cigarette),
+        "High": cigarette_high(cigarette)
     }
 
 
@@ -159,6 +154,7 @@ def build_rules():
                     rules.append({"Age": a, "Glucose": g, "BMI": b, "Cigarette": c, "Output": out})
     return rules
 
+
 # ====== Defuzzifikasi Tsukamoto ======
 def defuzzify(inferences):
     if not inferences:
@@ -175,11 +171,11 @@ st.title("\U0001F9E0 Prediksi Stroke dengan Logika Fuzzy Tsukamoto")
 st.header("1\u20e3 Input Data")
 col1, col2 = st.columns(2)
 with col1:
-    age = st.slider("Age", 25, 65, 35)
-    bmi = st.slider("BMI", 10, 50, 25)
+    age = st.slider("Age", 0.0, 100.0, 35.0, step=0.1)
+    bmi = st.slider("BMI", 0.0, 50.0, 25.0, step=0.1)
 with col2:
-    glucose = st.slider("Glucose", 50, 100, 75)
-    cigarette = st.slider("Cigarette", 5, 40, 15)
+    glucose = st.slider("Glucose", 0.0, 100.0, 75.0, step=0.1)
+    cigarette = st.slider("Cigarette", 0.0, 100.0, 15.0, step=0.1)
 
 # === 2. Fuzzyfikasi ===
 st.header("2\u20e3 Fuzzyfikasi (Tingkat Keanggotaan)")
